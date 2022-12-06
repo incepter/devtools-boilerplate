@@ -7,8 +7,7 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
-    "lint:fix": "eslint --fix --ext .ts,tsx --ignore-path .gitignore .",
-    "prettier:write": "prettier -u -w --ignore-path .gitignore \"*.{ts,tsx,css,html}\""
+    "lint:fix": "eslint --ext .ts,tsx --ignore-path .gitignore . --fix"
   },
   "husky": {
     "hooks": {
@@ -16,8 +15,8 @@
     }
   },
   "lint-staged": {
-    "*.{ts,tsx}": "pnpm lint:fix",
-    "*": "prettier:write"
+    "*.{ts,tsx}": "eslint --fix",
+    "*": "prettier -w -u"
   },
   "dependencies": {
     "react": "^18.2.0",

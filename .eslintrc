@@ -13,10 +13,18 @@
     "sourceType": "module"
   },
   "settings": {
+    "import/resolver": {
+      "node": {
+        "paths": ["src"],
+        "extensions": [".js", ".jsx", ".ts", ".tsx"]
+      }
+    },
     "jest": {
       "version": 27
     }
   },
   "ignorePatterns": ["*.d.ts"],
-  "rules": {}
+  "rules": {
+    "sort-imports": 0
+  }
 }
