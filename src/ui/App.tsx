@@ -38,31 +38,13 @@ export enum DevtoolsMessageType {
   saveSettings = "saveSettings",
 }
 
-
-let currentHref: string | undefined = undefined;
-
-if (__DEV__) {
-  currentHref = location.href;
-} else {
-  chrome.tabs.query({active: true, currentWindow: true}, function (tabs) {
-    let activeTab = tabs[0];
-    currentHref = activeTab.url;
-  });
-}
-
-function isTargeted(hrefs) {
-  return hrefs.some(src => currentHref?.startsWith(src));
-}
-
 function App() {
   let [port, setPort] = React.useState<chrome.runtime.Port | null>(getNewPort);
   let [settings, setSettings] = React.useState<Settings | null>(null);
-  console.log("reeeeeeeender", settings, port);
 
   React.useEffect(() => {
     if (!port) {
       let newPort = getNewPort();
-      console.log('getting port', newPort);
       setPort(newPort);
       return;
     }
@@ -92,11 +74,9 @@ function App() {
       }
       switch (message.type) {
         case AgentEventType.settingsChange:
-          console.log('got new settings !');
           setSettings(message.payload);
           return;
       }
-      console.log('########received this message from agent', message);
     }
 
     function onPortDisconnect() {
@@ -106,7 +86,6 @@ function App() {
       port!.onMessage.removeListener(onMessageFromPage);
       disconnected = true;
       setPort(null);
-      console.log('port disconnected'!);
     }
 
   }, [port]);

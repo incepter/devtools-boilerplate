@@ -1,7 +1,9 @@
 {
   "env": {
     "browser": true,
-    "es2021": true
+    "es2021": true,
+    "node": true,
+    "webextensions": true
   },
   "extends": ["eslint:recommended", "prettier"],
   "parser": "@typescript-eslint/parser",
@@ -25,6 +27,8 @@
   },
   "ignorePatterns": ["*.d.ts"],
   "rules": {
-    "sort-imports": 0
+    "sort-imports": 0,
+    "no-case-declarations": 0,
+    "no-unused-vars": 0
   }
 }
