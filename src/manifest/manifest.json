@@ -1,0 +1,31 @@
+{
+  "manifest_version" : 3,
+  "name" : "EXTENSION_LIB_DISPLAY_NAME",
+  "version" : "0.1",
+  "author" : "EXTENSION_AUTHOR",
+  "description" : "EXTENSION_LIB_DESCRIPTION",
+
+  "permissions": [
+    "tabs"
+  ],
+
+  "devtools_page" : "index.html",
+
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "<all_urls>"
+      ],
+      "js": [
+        "contentScript.js"
+      ],
+      "run_at": "document_start"
+    }
+  ]
+}
