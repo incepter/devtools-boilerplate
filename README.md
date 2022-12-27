@@ -50,7 +50,7 @@ pnpm dev
 pnpm build
 ```
 
-6. Then you can your extensions as [unpacked to chrome](https://webkul.com/blog/how-to-install-the-unpacked-extension-in-chrome/)
+6. Then you can install your extensions as [unpacked to chrome](https://webkul.com/blog/how-to-install-the-unpacked-extension-in-chrome/)
 and just choose the build folder
 
 7. Close the devtools if open, then refresh the tab and reopen it again
