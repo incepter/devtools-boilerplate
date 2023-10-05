@@ -1,6 +1,7 @@
 import { ParsedNode, ParsingReturn, ReactFiber } from "./_types";
 import { getNodeProps, getNodeType, humanizeTag } from "./utils";
 import React from "react";
+import {DEVTOOLS_AGENT} from "../shared";
 
 let visitedFibersCount = 0;
 let currentChildrenSiblingsOffset = 0;
@@ -97,4 +98,45 @@ export function setupRoot(
   return () => {
     delete fiberRoot.__listeners.list[thisId];
   };
+}
+
+
+export function scanAndSend() {
+  let reactSharedGlobals = window.__REACT_DEVTOOLS_GLOBAL_HOOK__;
+  if (!reactSharedGlobals) {
+    console.log("no react devtools");
+    return;
+  }
+  // assuming 1 is for react-dom, gotta verify
+  let availableRoots = reactSharedGlobals.getFiberRoots?.(1);
+  if (!availableRoots) {
+    console.log("no available roots");
+    return;
+  }
+
+  let roots = [...availableRoots];
+  if (!roots.length) {
+    console.log("roots size is zero");
+    return;
+  }
+
+  console.log("proceeding to parse the root");
+
+  let results = roots.map((root) => {
+    let hostNode = root.containerInfo;
+    let result = parseNode(root.current);
+    return {
+      ...result,
+      id: hostNode.id,
+    };
+  });
+
+  (window as any).postMessage(
+    {
+      type: "scan-result",
+      source: DEVTOOLS_AGENT,
+      data: results,
+    },
+    "*"
+  );
 }
