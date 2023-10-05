@@ -9,7 +9,8 @@
     "build:main": "vite build --config config/vite.config.main.ts",
     "build:background": "vite build --config config/vite.config.background.ts",
     "build:contentScript": "vite build --config config/vite.config.contentScript.ts",
-    "build": "pnpm tsc && pnpm build:view && pnpm build:main && pnpm build:background && pnpm build:contentScript",
+    "build:bgScript": "vite build --config config/vite.config.bgscript.ts",
+    "build": "pnpm tsc && pnpm build:view && pnpm build:main && pnpm build:background && pnpm build:bgScript && pnpm build:contentScript",
     "preview": "vite preview",
     "lint:fix": "eslint --ext .ts,tsx --ignore-path .gitignore . --fix"
   },

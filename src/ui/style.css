@@ -1,0 +1,110 @@
+.el {
+  border: 1px solid white;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  border-radius: 24px;
+  height: fit-content;
+
+  min-width: 200px;
+  max-width: 200px;
+  min-height: 40px;
+}
+
+.el-child {
+  position: relative;
+  margin-top: 40px;
+
+  display: flex;
+  flex-direction: column;
+}
+
+.el-root {
+}
+
+.el-sibling {
+  position: relative;
+  margin-left: 40px;
+
+  display: flex;
+  flex-direction: row;
+}
+
+.el-has-sibling {
+  flex-direction: row;
+}
+.el-has-sibling > div {
+  display: flex;
+}
+
+.el-has-sibling.el-has-child > div.el-sibling {
+  margin-top: 40px;
+}
+
+.el-has-child {
+  flex-direction: column;
+}
+
+.el-child::before {
+  content: "";
+  position: absolute;
+  left: 90px;
+  height: 40px;
+  width: 1px;
+  background-color: white;
+  translate: 0px -40px;
+}
+
+.el-sibling::before {
+}
+
+ul {
+  padding: 0px;
+}
+
+@font-face {
+  font-family: JuneBug;
+  src: url("JUNEBUG.TTF");
+}
+
+* {
+  font-family: "Source Code Pro", monospace;
+  font-size: 12px;
+}
+
+.el-host {
+  background-color: orangered;
+}
+
+.el-with-sibling {
+  position: relative;
+}
+
+.el-sibling-separator {
+  position: absolute;
+  border: none;
+  border-bottom: 1px solid white;
+  max-height: 30px;
+
+  top: 30px;
+  height: 1px;
+  left: 218px;
+}
+
+.with-roots-container {
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.with-roots-container > div {
+  display: flex;
+  flex-direction: row;
+  gap: 16px;
+}
+.current-root {
+    border-color: orangered;
+}

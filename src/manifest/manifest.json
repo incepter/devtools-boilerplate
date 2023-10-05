@@ -1,15 +1,21 @@
 {
-  "manifest_version" : 3,
-  "name" : "EXTENSION_LIB_DISPLAY_NAME",
-  "version" : "0.1",
-  "author" : "EXTENSION_AUTHOR",
-  "description" : "EXTENSION_LIB_DESCRIPTION",
+  "manifest_version": 3,
+  "name": "EXTENSION_LIB_DISPLAY_NAME",
+  "version": "0.1",
+  "author": "EXTENSION_AUTHOR",
+  "description": "EXTENSION_LIB_DESCRIPTION",
 
   "permissions": [
-    "tabs"
+    "tabs",
+    "activeTab",
+    "scripting"
+  ],
+  "host_permissions": [
+    "*://*/*",
+    "<all_urls>"
   ],
 
-  "devtools_page" : "index.html",
+  "devtools_page": "index.html",
 
   "background": {
     "service_worker": "background.js"
@@ -19,12 +25,8 @@
   },
   "content_scripts": [
     {
-      "matches": [
-        "<all_urls>"
-      ],
-      "js": [
-        "contentScript.js"
-      ],
+      "matches": ["<all_urls>"],
+      "js": ["contentScript.js"],
       "run_at": "document_start"
     }
   ]

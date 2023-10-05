@@ -1,5 +1,5 @@
 import * as React from "react";
-import './App.css'
+import "./App.css";
 import {
   __DEV__,
   AgentEventType,
@@ -7,40 +7,40 @@ import {
   DEVTOOLS_PANEL,
   getTabId,
   libDisplayName,
-  Settings
+  Settings,
 } from "../shared";
-import {DevtoolsMessage} from "../cs/consume";
-import {devtoolsPortInDev} from "./shim";
-import SettingsForm from "./SettingsForm";
+import { DevtoolsMessage } from "../cs/consume";
+import { devtoolsPortInDev } from "./shim";
+import { ParsingReturn } from "../parser/_types";
+import { FiberTreeViewWithRoots } from "./FiberTreeView";
 
 function getNewPort(): chrome.runtime.Port {
   if (__DEV__) {
     return devtoolsPortInDev();
   }
-  return chrome.runtime.connect({name: "panel"});
+  return chrome.runtime.connect({ name: "panel" });
 }
 
 interface PageMessageBase {
-  tabId: number,
-  source: string,
+  tabId: number;
+  source: string;
 }
 
-interface PageSettingsChangeMessage extends PageMessageBase {
-  payload: Settings,
-  type: AgentEventType.settingsChange,
-}
-
-
-export type PageMessage = PageSettingsChangeMessage;
+export type PageMessage = {
+  type: "scan-result";
+  data: ParsingReturn[];
+  source: typeof DEVTOOLS_AGENT;
+};
 
 export enum DevtoolsMessageType {
   init = "init",
-  saveSettings = "saveSettings",
+  scan = "scan",
 }
 
 function App() {
   let [port, setPort] = React.useState<chrome.runtime.Port | null>(getNewPort);
-  let [settings, setSettings] = React.useState<Settings | null>(null);
+
+  let [result, setResult] = React.useState<ParsingReturn[] | null>(null);
 
   React.useEffect(() => {
     if (!port) {
@@ -53,15 +53,16 @@ function App() {
     port.postMessage({
       source: DEVTOOLS_PANEL,
       type: DevtoolsMessageType.init,
-      tabId: getTabId()
+      tabId: getTabId(),
     });
 
     port.onMessage.addListener(onMessageFromPage);
-    port.onDisconnect.addListener(() => port!.onMessage.removeListener(onMessageFromPage));
+    port.onDisconnect.addListener(() =>
+      port!.onMessage.removeListener(onMessageFromPage)
+    );
     port.onDisconnect.addListener(onPortDisconnect);
 
     return onPortDisconnect;
-
 
     function onMessageFromPage(message: PageMessage) {
       if (disconnected) {
@@ -72,10 +73,13 @@ function App() {
           return;
         }
       }
+
+      console.log("received message to devtools", message);
       switch (message.type) {
-        case AgentEventType.settingsChange:
-          setSettings(message.payload);
-          return;
+        case "scan-result": {
+          let data = message.data;
+          setResult(data);
+        }
       }
     }
 
@@ -87,58 +91,30 @@ function App() {
       disconnected = true;
       setPort(null);
     }
-
   }, [port]);
+
+  console.log("nreder", result);
+
   return (
     <div className="App">
-      {settings && (
-        <span
-          className={settings.enabled ? "info-enabled" : "info-disabled"}>
-          {libDisplayName} is {settings.enabled ? "Enabled" : "Disabled"}
-        </span>
-      )}
-      {(port && settings) && (
+      {port && (
         <div className="header">
           <button
-            onClick={() => port!.postMessage(
-              {
+            onClick={() =>
+              port!.postMessage({
                 source: __DEV__ ? DEVTOOLS_PANEL : DEVTOOLS_PANEL,
-                type: DevtoolsMessageType.saveSettings,
+                type: DevtoolsMessageType.scan,
                 tabId: getTabId(),
-                payload: {
-                  ...settings,
-                  enabled: !settings!.enabled,
-                }
-              } as DevtoolsMessage
-            )}>
-            {settings.enabled ? 'Disable' : 'Enable'}
-          </button>
-          <button
-            onClick={() => port!.postMessage(
-              {
-                reload: true,
-                source: DEVTOOLS_PANEL,
-                type: DevtoolsMessageType.saveSettings,
-                tabId: getTabId(),
-                payload: {
-                  ...settings,
-                  enabled: !settings!.enabled,
-                }
-              } as DevtoolsMessage
-            )}>
-            {settings.enabled ? 'Disable And reload page' : 'Enable And reload page'}
+              } as DevtoolsMessage)
+            }
+          >
+            Refresh
           </button>
         </div>
       )}
-      <details className="edit-settings">
-        <summary>Edit settings</summary>
-        {settings !== null ? (
-          <SettingsForm key={JSON.stringify(settings)} port={port}
-                        settings={settings}/>
-        ) : null}
-      </details>
+      {result && <FiberTreeViewWithRoots results={result} />}
     </div>
-  )
+  );
 }
 
-export default App
+export default App;
