@@ -4,13 +4,18 @@ export default function DevApp() {
   return (
     <div>
       <span>Hi ! {Date.now()}</span>
-      <Inner />
+      <Inner initialText={"Hello World !"} />
+      <div>
+        <p>OK</p>
+        <span>Haaa !!</span>
+        <p>OK::</p>
+      </div>
     </div>
   );
 }
 
-function Inner() {
-  let [state, setState] = React.useState("Hello World !");
+function Inner({ initialText }) {
+  let [state, setState] = React.useState(initialText);
 
   return <input value={state} onChange={(e) => setState(e.target.value)} />;
 }

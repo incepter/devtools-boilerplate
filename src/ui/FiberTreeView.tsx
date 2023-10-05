@@ -24,7 +24,9 @@ export function FiberTreeViewWithRoots({
           <button
             key={index}
             onClick={() => setCurrentIndex(index)}
-            className={`root-btn ${result[1] === current[1] ? "current-root" : ""}`}
+            className={`root-btn ${
+              result[1] === current[1] ? "current-root" : ""
+            }`}
           >
             <span>{`id=${result[1]}`}</span>
             <span>{`${result[0]} total nodes`}</span>
@@ -55,28 +57,34 @@ function NodeView({ node, variant = "root" }: NodeViewProps) {
   const hasChild = !!child;
   const hasSibling = !!sibling;
 
-  const separatorWidth = hasSibling ? 258 * (sibling[3] || 0) + 40 : 40;
+  const separatorWidth = hasSibling ? 172 * (sibling[3] || 0) + 20 : 20;
 
   const containerClx = `${variantClx} ${hasSibling ? "el-has-sibling" : ""}`;
   const mainClx = `${hasChild ? "el-has-child" : ""} ${
     hasSibling ? "el-has-sibling" : ""
   }`;
 
+  let elementTitle = `${String(type)}\n(${tag})`;
+
   return (
     <div className={containerClx}>
       <div className={mainClx}>
         <div className={`el ${isHostThing ? "el-host" : ""}`}>
-          <span>
-            {tag}
-            {type && <span>{` (${type.toString()})`}</span>}
+          <span title={elementTitle}>
+            {type && type !== "null" && (
+              <span className="el-type">{String(type)}</span>
+            )}
+            <span className="el-tag">{tag}</span>
           </span>
-
-          {props &&
-            Object.entries(props).map(([prop, value]) => (
-              <li key={prop}>
-                {prop}: {debugIt(value)}
-              </li>
-            ))}
+          <div className="el-props">
+            {props &&
+              Object.entries(props).map(([prop, value]) => (
+                <li
+                  title={`${prop}: ${safeString(value)}`}
+                  key={prop}
+                >{`${prop}: ${safeString(value).substring(0, 20)}`}</li>
+              ))}
+          </div>
         </div>
         {hasChild && <NodeView variant="child" node={child} />}
       </div>
@@ -93,12 +101,12 @@ function NodeView({ node, variant = "root" }: NodeViewProps) {
   );
 }
 
-function debugIt(src: any) {
+function safeString(src: any) {
   try {
     return String(src);
   } catch (e) {
     console.warn("This errorred");
     console.log(src);
-    return src;
+    return "--parsing-error";
   }
 }
