@@ -1,5 +1,6 @@
 import { __DEV__, DEVTOOLS_AGENT, DEVTOOLS_PANEL } from "../shared";
-import { consumeMessage } from "../cs/consume";
+import { DevtoolsMessage, DevtoolsMessageType } from "../cs/consume";
+import {scanAndSend} from "../parser";
 
 let shimId = 0;
 
@@ -53,4 +54,10 @@ function spyOnMessagesFromCurrentPage(listeners, message) {
       consumeMessage(message.data);
     }
   }
+}
+
+export function consumeMessage(message: DevtoolsMessage) {
+  console.log("consuming message_______", message);
+
+  scanAndSend();
 }

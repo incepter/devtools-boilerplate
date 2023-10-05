@@ -92,23 +92,35 @@ export function humanizeTag(tag: number) {
   }
 }
 
+function StringValue(str) {
+  try {
+    return String(str);
+  } catch (e) {
+    return "parse-error";
+  }
+}
+
 export function getNodeProps(node: ReactFiber) {
   let props: ParsedNode["props"] = undefined;
+
   if (node.memoizedProps !== null) {
     const memoizedProps = node.memoizedProps;
+
     if (typeof memoizedProps === "object" && memoizedProps !== null) {
       const { children, ...otherProps } = node.memoizedProps;
+
       if (typeof children === "string" || typeof children === "number") {
         props = { children };
       } else {
         const propsKeys = Object.keys(otherProps);
         if (propsKeys.length > 0) {
           props = {};
+
           for (const prop of propsKeys) {
             if (typeof memoizedProps[prop] === "function") {
               props[prop] = memoizedProps[prop].name;
             } else {
-              props[prop] = String(memoizedProps[prop]);
+              props[prop] = StringValue(memoizedProps[prop]);
             }
           }
         }

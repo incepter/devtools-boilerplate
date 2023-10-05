@@ -23,16 +23,3 @@ export enum DevtoolsMessageType {
   init = "init",
   scan = "scan",
 }
-
-export function consumeMessage(message: DevtoolsMessage) {
-  console.log("consuming message", message, window.__REACT_FIBER_TREE__);
-
-  switch (message.type) {
-    case DevtoolsMessageType.init:
-      console.log("devtools init message", message);
-      return;
-    case DevtoolsMessageType.scan:
-      console.log("devtools scan message", message);
-      return;
-  }
-}

@@ -1,12 +1,11 @@
 import * as React from "react";
 import "./App.css";
+import "./index.css";
 import {
   __DEV__,
-  AgentEventType,
   DEVTOOLS_AGENT,
   DEVTOOLS_PANEL,
   getTabId,
-  libDisplayName,
   Settings,
 } from "../shared";
 import { DevtoolsMessage } from "../cs/consume";
@@ -93,7 +92,7 @@ function App() {
     }
   }, [port]);
 
-  console.log("nreder", result);
+  console.log("render", result);
 
   return (
     <div className="App">

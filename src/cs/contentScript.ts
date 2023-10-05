@@ -8,7 +8,6 @@ function onMessageFromBackground(message) {
   if (message.source !== DEVTOOLS_PANEL) {
     return;
   }
-  // consumeMessage(message as DevtoolsMessage);
   (window as any).postMessage(message, "*");
 }
 
