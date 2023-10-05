@@ -1,13 +1,7 @@
 import * as React from "react";
 import "./App.css";
 import "./index.css";
-import {
-  __DEV__,
-  DEVTOOLS_AGENT,
-  DEVTOOLS_PANEL,
-  getTabId,
-  Settings,
-} from "../shared";
+import { __DEV__, DEVTOOLS_AGENT, DEVTOOLS_PANEL, getTabId } from "../shared";
 import { DevtoolsMessage } from "../cs/consume";
 import { devtoolsPortInDev } from "./shim";
 import { ParsingReturn } from "../parser/_types";
@@ -73,9 +67,9 @@ function App() {
         }
       }
 
-      console.log("received message to devtools", message);
       switch (message.type) {
         case "scan-result": {
+          console.log("received result", message.data);
           let data = message.data;
           setResult(data);
         }

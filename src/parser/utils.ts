@@ -3,6 +3,7 @@ import { ParsedNode, ReactFiber } from "./_types";
 export function getNodeType(node: ReactFiber) {
   return typeof node.type === "function" ? node.type.name : String(node.type);
 }
+
 export function humanizeTag(tag: number) {
   switch (tag) {
     case 0: {
@@ -101,7 +102,7 @@ function StringValue(str) {
 }
 
 export function getNodeProps(node: ReactFiber) {
-  let props: ParsedNode["props"] = undefined;
+  let props: ParsedNode[2] = undefined;
 
   if (node.memoizedProps !== null) {
     const memoizedProps = node.memoizedProps;

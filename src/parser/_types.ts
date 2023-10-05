@@ -1,26 +1,41 @@
 import React from "react";
 
-export type ParsedNode = {
-  tag: string;
+export type ParsedNodeStructured = {
+  tag: number;
   type: string;
-  props:
-    | string
-    | { props: string | number | symbol }
-    | { children: string | number | symbol }
-    | Record<string, string>
-    | undefined;
-
-  child?: ParsedNode;
-  sibling?: ParsedNode;
-
-  offset?: number;
+  props: Props;
+  offset: number;
+  child: ParsedNode | null;
+  sibling: ParsedNode | null;
 };
 
-export type ParsingReturn = {
-  id?: string,
-  tree: ParsedNode,
+export type ParsedNode = [
+  tag: number, // 0
+  type: string, // 1
+  props: Props, // 2
+  offset: number, // 3
+  child: ParsedNode | null, // 4
+  sibling: ParsedNode | null // 5
+];
+
+export type Props =
+  | string
+  | { props: string | number | symbol }
+  | { children: string | number | symbol }
+  | Record<string, string>
+  | undefined;
+
+export type ParsingReturnStructured = {
+  count: number;
+  id: string | null;
+  tree: ParsedNode;
+};
+
+export type ParsingReturn = [
   count: number,
-}
+  id: string | null,
+  tree: ParsedNode
+];
 
 export interface ReactFiberRoot {
   current: ReactFiber;

@@ -6,36 +6,42 @@ let visitedFibersCount = 0;
 let currentChildrenSiblingsOffset = 0;
 function internal_ParseNode(node: ReactFiber): ParsedNode {
   visitedFibersCount += 1;
+
   const type = getNodeType(node);
   const props = getNodeProps(node);
-  const tag = humanizeTag(node.tag);
 
-  const result: ParsedNode = {
-    tag,
-    type,
-    props,
-  };
+  let childResult: ParsedNode | null = null;
+  let siblingResult: ParsedNode | null = null;
 
   if (node.child && node.sibling) {
     const previousOffset = currentChildrenSiblingsOffset;
     currentChildrenSiblingsOffset = 0;
 
-    result.child = internal_ParseNode(node.child);
+    childResult = internal_ParseNode(node.child);
     const resultingOffset = currentChildrenSiblingsOffset;
 
-    result.sibling = internal_ParseNode(node.sibling);
-    result.sibling.offset = resultingOffset;
+    siblingResult = internal_ParseNode(node.sibling);
+    siblingResult[3] = resultingOffset;
+
     currentChildrenSiblingsOffset += previousOffset + 1;
   } else {
     if (node.child) {
-      result.child = internal_ParseNode(node.child);
+      childResult = internal_ParseNode(node.child);
     }
     if (node.sibling) {
       currentChildrenSiblingsOffset += 1;
-      result.sibling = internal_ParseNode(node.sibling);
+      siblingResult = internal_ParseNode(node.sibling);
     }
   }
-  return result;
+
+  return [
+    node.tag,
+    type,
+    props,
+    0, // the offset
+    childResult,
+    siblingResult,
+  ];
 }
 
 export function parseNode(node: ReactFiber): ParsingReturn {
@@ -48,10 +54,11 @@ export function parseNode(node: ReactFiber): ParsingReturn {
   visitedFibersCount = 0;
   currentChildrenSiblingsOffset = 0;
 
-  return {
-    tree: result,
-    count: nodesCount,
-  };
+  return [
+    nodesCount,
+    node.stateNode.containerInfo.id || null, // the root id
+    result,
+  ];
 }
 
 export function setupRoot(

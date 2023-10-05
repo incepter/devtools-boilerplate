@@ -1,31 +1,40 @@
 import * as React from "react";
-import {ParsedNode, ParsingReturn} from "../parser/_types";
+import { ParsedNode, ParsingReturn } from "../parser/_types";
 import "./style.css";
-import {getVariantClassName} from "../parser/utils";
+import { getVariantClassName, humanizeTag } from "../parser/utils";
 
-export function FiberTreeViewWithRoots({ initialIndex = 0, results }) {
-  const [current, setResult] = React.useState(results[initialIndex]);
+type FiberRootTreeViewProps = {
+  initialIndex?: number;
+  results: ParsingReturn[];
+};
+
+export function FiberTreeViewWithRoots({
+  initialIndex = 0,
+  results,
+}: FiberRootTreeViewProps) {
+  const [currentIndex, setCurrentIndex] = React.useState<number>(initialIndex);
+  const current = results[currentIndex];
+
+  console.log("papapa", current);
 
   return (
     <div className="with-roots-container">
       <div>
-        {results.map((result, id) => (
+        {results.map((result: ParsingReturn, index: number) => (
           <button
-            key={id}
-            onClick={() => setResult(result)}
-            className={result === current ? "current-root" : ""}
+            key={index}
+            onClick={() => setCurrentIndex(index)}
+            className={`root-btn ${result[1] === current[1] ? "current-root" : ""}`}
           >
-            {`id=${result.id}(${result.count})`}
+            <span>{`id=${result[1]}`}</span>
+            <span>{`${result[0]} total nodes`}</span>
           </button>
         ))}
       </div>
-      {current && <NodeView node={current.tree} />}
+      {current && <NodeView node={current[2]} />}
     </div>
   );
 }
-type FiberRootTreeViewProps = {
-  result: ParsingReturn;
-};
 
 export type NodeViewProps = {
   node: ParsedNode;
@@ -37,7 +46,8 @@ function NodeView({ node, variant = "root" }: NodeViewProps) {
     return null;
   }
 
-  const { child, sibling, tag, props, type } = node;
+  const [numberTag, type, props, offset, child, sibling] = node;
+  const tag = humanizeTag(numberTag);
 
   const variantClx = getVariantClassName(variant);
   const isHostThing = tag.startsWith("Host") && tag !== "HostRoot";
@@ -45,7 +55,7 @@ function NodeView({ node, variant = "root" }: NodeViewProps) {
   const hasChild = !!child;
   const hasSibling = !!sibling;
 
-  const separatorWidth = hasSibling ? 258 * (sibling.offset || 0) + 40 : 40;
+  const separatorWidth = hasSibling ? 258 * (sibling[3] || 0) + 40 : 40;
 
   const containerClx = `${variantClx} ${hasSibling ? "el-has-sibling" : ""}`;
   const mainClx = `${hasChild ? "el-has-child" : ""} ${
