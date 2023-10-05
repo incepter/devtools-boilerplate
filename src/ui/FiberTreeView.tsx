@@ -15,7 +15,7 @@ export function FiberTreeViewWithRoots({ initialIndex = 0, results }) {
             onClick={() => setResult(result)}
             className={result === current ? "current-root" : ""}
           >
-            {`id=${result.id}`}
+            {`id=${result.id}(${result.count})`}
           </button>
         ))}
       </div>

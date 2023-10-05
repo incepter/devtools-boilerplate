@@ -22,26 +22,47 @@ function onDevtoolsConnect(port) {
   let tabId;
 
   function onMessageFromDevtools(message) {
+    console.log("bg received", message);
     if (message.source !== DEVTOOLS_PANEL) {
       return;
     }
-    console.log("bg received", message);
+    console.log("__________________bg received", message);
     if (message.type === DevtoolsMessageType.init) {
       if (tabId && ports[tabId]) {
+        console.log("existing discronn");
         onDevtoolsDisconnect();
       }
       tabId = message.tabId;
       ports[tabId] = port;
-      chrome.tabs.query({ active: true, currentWindow: true }).then(([tab]) => {
-        chrome.scripting.executeScript({
-          target: {
-            tabId: tab!.id!,
-          },
-          files: ["bgScript.js"],
-          // @ts-ignore
-          world: chrome.scripting.ExecutionWorld.MAIN,
-        });
-      });
+      console.log("load bgscript");
+      chrome.tabs.query({ active: true, currentWindow: true }).then(
+        ([tab]) => {
+          console.log("then then", tab!.id);
+          try {
+            chrome.scripting
+              .executeScript({
+                target: {
+                  tabId: tab!.id!,
+                  allFrames : true,
+                },
+                files: ["bgScript.js"],
+                // @ts-ignore
+                world: chrome.scripting.ExecutionWorld.MAIN,
+                injectImmediately: true,
+              })
+              .then(
+                (t) => console.log("ok", t),
+                (e) => console.log("errrr", e)
+              );
+          } catch (e) {
+            console.log("eeeeeeerrrrrrrrr", e);
+          }
+        },
+        (e) => {
+          console.error("e", e);
+        }
+      );
+      console.log("transfer message");
       chrome.tabs.sendMessage(tabId, message);
       return;
     }
@@ -49,6 +70,7 @@ function onDevtoolsConnect(port) {
       return;
     }
     if (ports[tabId]) {
+      console.log("forward", message);
       chrome.tabs.sendMessage(tabId, message);
     }
   }

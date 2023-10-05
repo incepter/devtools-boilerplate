@@ -1,6 +1,7 @@
 import { parseNode } from "./parse.js";
-import {DEVTOOLS_AGENT, DEVTOOLS_PANEL} from "../shared";
+import { DEVTOOLS_AGENT, DEVTOOLS_PANEL } from "../shared";
 
+console.log("bg load");
 if (!window.__REACT_FIBER_TREE__) {
   window.__REACT_FIBER_TREE__ = {
     scanAndSend() {
@@ -30,16 +31,19 @@ if (!window.__REACT_FIBER_TREE__) {
         return {
           ...result,
           id: hostNode.id,
-        }
+        };
       });
 
       console.log("result is", results);
 
-      (window as any).postMessage({
-        type: "scan-result",
-        source: DEVTOOLS_AGENT,
-        data: results,
-      }, "*");
+      (window as any).postMessage(
+        {
+          type: "scan-result",
+          source: DEVTOOLS_AGENT,
+          data: results,
+        },
+        "*"
+      );
     },
   };
 
@@ -49,20 +53,23 @@ if (!window.__REACT_FIBER_TREE__) {
 function stringify(val, depth) {
   depth = isNaN(+depth) ? 1 : depth;
 
-  function _build(key, val, depth, o?, a?) { // (JSON.stringify() has it's own rules, which we respect here by using it for property iteration)
-    return !val || typeof val !== 'object' ? val : (a = Array.isArray(val), JSON.stringify(val, function (
-      k, v) {
-      if (a || depth > 0) {
-        if (!k) return (a = Array.isArray(v), val = v);
-        !o && (o = a ? [] : {});
-        o[k] = _build(k, v, a ? depth : depth - 1);
-      }
-    }), o || (a ? [] : {}));
+  function _build(key, val, depth, o?, a?) {
+    // (JSON.stringify() has it's own rules, which we respect here by using it for property iteration)
+    return !val || typeof val !== "object"
+      ? val
+      : ((a = Array.isArray(val)),
+        JSON.stringify(val, function (k, v) {
+          if (a || depth > 0) {
+            if (!k) return (a = Array.isArray(v)), (val = v);
+            !o && (o = a ? [] : {});
+            o[k] = _build(k, v, a ? depth : depth - 1);
+          }
+        }),
+        o || (a ? [] : {}));
   }
 
-  return JSON.stringify(_build('', val, depth));
+  return JSON.stringify(_build("", val, depth));
 }
-
 
 function onMessageFromContentScript(message) {
   console.log("GOT A MESSAGE", message?.data?.source);

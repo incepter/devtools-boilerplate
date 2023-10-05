@@ -1,15 +1,15 @@
 import { DEVTOOLS_AGENT, DEVTOOLS_PANEL } from "../shared";
-import { consumeMessage, DevtoolsMessage } from "./consume";
 
 (window as any).chrome.runtime.onMessage.addListener(onMessageFromBackground); // background -> content-script (here) -> page
 (window as any).addEventListener("message", onMessageFromPage); // page -> content-script (here) -> background
 
 function onMessageFromBackground(message) {
+  console.log("cs da", message);
   if (message.source !== DEVTOOLS_PANEL) {
     return;
   }
   // consumeMessage(message as DevtoolsMessage);
-  (window as any).postMessage(message, '*');
+  (window as any).postMessage(message, "*");
 }
 
 function onMessageFromPage(event) {
@@ -22,7 +22,3 @@ function onMessageFromPage(event) {
     (window as any).chrome.runtime.sendMessage(event.data);
   }
 }
-
-window.addEventListener("load", () => {
-  console.log("window loaded, content script", window.__REACT_FIBER_TREE__);
-});
